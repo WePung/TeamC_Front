@@ -40,7 +40,7 @@ const Join = () => {
 
     // 아이디 동기 처리
     useEffect(()=>{
-      const regex = /^[a-zA-z0-9]{4,12}$/
+      const regex = /^[A-Za-z0-9_]+[A-Za-z0-9]*[@]{1}[A-Za-z0-9]+[A-Za-z0-9]*[.]{1}[A-Za-z]{1,3}$/;
       if(id.length === 0){
       }else{
         if (regex.test(id)) {
@@ -62,7 +62,7 @@ const Join = () => {
           id: inputIdValue
         }])
 
-        const regex = /^[a-zA-z0-9]{4,12}$/
+        const regex = /^[A-Za-z0-9_]+[A-Za-z0-9]*[@]{1}[A-Za-z0-9]+[A-Za-z0-9]*[.]{1}[A-Za-z]{1,3}$/;
         if (regex.test(id)) {
           setIdValid(true);
         } else {

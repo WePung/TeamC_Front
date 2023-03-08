@@ -5,14 +5,12 @@ import emailImg from "../../assets/email.png";
 import passwordImg from "../../assets/password.png";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/Logo.png";
+import axios from "axios";
 
-const Login = ({ setIsLogin, User }) => {
+const Login = ({ setIsLogin, setuserInfo }) => {
   const navigate = useNavigate();
   const toHome = () => {
     navigate("/board1");
-  };
-  const toJoin = () => {
-    navigate("/join");
   };
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
@@ -23,8 +21,7 @@ const Login = ({ setIsLogin, User }) => {
 
   const handleId = (e) => {
     setId(e.target.value);
-    const regex =
-      /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+    const regex = /^[A-Za-z0-9_]+[A-Za-z0-9]*[@]{1}[A-Za-z0-9]+[A-Za-z0-9]*[.]{1}[A-Za-z]{1,3}$/;
     if (regex.test(id)) {
       setIdValid(true);
     } else {
@@ -51,19 +48,26 @@ const Login = ({ setIsLogin, User }) => {
     setNotAllow(true);
   }, [idValid, pwValid]);
 
-  const onClickConfirmButton = () => {
-    if (id === User.id && pw === User.pw) {
-      alert("로그인 성공");
-      toHome();
+  async function loginFunc () {
+    try {
       setIsLogin(true);
-    } else if (id !== User.id && pw === User.pw) {
-      alert("아이디를 확인해주세요");
-    } else if (id === User.id && pw !== User.pw) {
-      alert("패스워드를 확인해주세요");
-    } else {
-      alert("가입자 정보가 없습니다.");
+      const response = await axios.get('http://localhost:8080/api-login', {params : {user_id: id}});
+      // console.log(response.data);
+      const logindata = response.data;
+      if(logindata != null){
+        if(logindata.user_pw === pw){
+          setuserInfo([logindata.user_no, logindata.user_name]);
+          setIsLogin(true);
+          toHome();
+          alert("로그인 성공");
+        }
+      }else{
+        alert("가입자 정보가 없습니다.");
+      }
+    } catch (error) {
+      console.log(error);
     }
-  };
+  }
 
   return (
     <div className="loginPage">
@@ -116,10 +120,10 @@ const Login = ({ setIsLogin, User }) => {
             <a href="#">I forgot my password!</a>
           </div>
           <button
-            type="submit"
+            type="button"
             className="loginBtn"
             disabled={notAllow}
-            onClick={onClickConfirmButton}
+            onClick={loginFunc}
           >
             로그인
           </button>
